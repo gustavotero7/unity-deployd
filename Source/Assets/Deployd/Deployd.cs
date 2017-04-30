@@ -15,7 +15,8 @@ using System.Security.Cryptography;
 using Facebook.Unity;
 #endif
 
-public class Deployd : MonoBehaviour {
+public class Deployd : MonoBehaviour
+{
 
     public const string endpoint = "https://api.exaple.com";// your api endpoint
 
@@ -24,14 +25,16 @@ public class Deployd : MonoBehaviour {
 
     private static Deployd instance;
 
-    private static Deployd Instance {
-        get {
+    private static Deployd Instance
+    {
+        get
+        {
             return instance;
         }
     }
 
-    public delegate void AuthCallBack(string result);
-    
+    public delegate void DeploydCallBack(string result);
+
     void Awake()
     {
         //Keep only one instance of deployd class
@@ -56,7 +59,7 @@ public class Deployd : MonoBehaviour {
     /// <param name="password">password of the current user</param>
     /// <param name="onSuccess">callback when the evalidation is successful</param>
     /// <param name="onError">callback when the validation returns null or custom error</param>
-    public static void SignIn(string username, string password, AuthCallBack onSuccess, AuthCallBack onError)
+    public static void SignIn(string username, string password, DeploydCallBack onSuccess, DeploydCallBack onError)
     {
         Instance.StartCoroutine(Instance.StartSignIn(username, password, onSuccess, onError));
     }
@@ -69,14 +72,14 @@ public class Deployd : MonoBehaviour {
     /// <param name="onSuccess">callback when the evalidation is successful</param>
     /// <param name="onError">callback when the validation returns null or custom error</param>
     /// <returns>User object trough callback string (JSON)</returns>
-    private IEnumerator StartSignIn(string username, string password, AuthCallBack onSuccess, AuthCallBack onError)
+    private IEnumerator StartSignIn(string username, string password, DeploydCallBack onSuccess, DeploydCallBack onError)
     {
         WWWForm form = new WWWForm();
         Dictionary<string, string> headers = form.headers;
         headers["Content-Type"] = "application/json";
         headers["Accept"] = "application/json";
         Hashtable data = new Hashtable();
-        data["username"] = "u"+LongHash(username.ToLower());
+        data["username"] = "u" + LongHash(username.ToLower());
         data["password"] = password;
         data["secret"] = secretkey;
         string json = MiniJSON.Json.Serialize(data);
@@ -133,7 +136,7 @@ public class Deployd : MonoBehaviour {
     /// <param name="lastname">User last name</param>
     /// <param name="onSuccess">callback when the user  creation request is successful</param>
     /// <param name="onError">callback when the user  creation request returns null or custom error</param>
-    public static void SignUp(string username, string password, string name, string lastname, AuthCallBack onSuccess, AuthCallBack onError)
+    public static void SignUp(string username, string password, string name, string lastname, DeploydCallBack onSuccess, DeploydCallBack onError)
     {
         Instance.StartCoroutine(Instance.StartSignUp(username, password, name, lastname, onSuccess, onError));
     }
@@ -147,14 +150,14 @@ public class Deployd : MonoBehaviour {
     /// <param name="onSuccess">callback when the user  creation request is successful</param>
     /// <param name="onError">callback when the user  creation request returns null or custom error</param>
     /// <returns>User object trough callback string (JSON)</returns>
-    IEnumerator StartSignUp(string username, string password, string name, string lastname, AuthCallBack onSuccess, AuthCallBack onError)
+    IEnumerator StartSignUp(string username, string password, string name, string lastname, DeploydCallBack onSuccess, DeploydCallBack onError)
     {
         WWWForm form = new WWWForm();
         Dictionary<string, string> headers = form.headers;
         headers["Content-Type"] = "application/json";
         headers["Accept"] = "application/json";
         Hashtable data = new Hashtable();
-        data["username"] = "u"+LongHash(username.ToLower());
+        data["username"] = "u" + LongHash(username.ToLower());
         data["email"] = username.ToLower();
         data["password"] = password;
         data["name"] = name;
@@ -209,7 +212,7 @@ public class Deployd : MonoBehaviour {
     /// <param name="_data">JSON object with the upload request data</param>
     /// <param name="onSuccess">callback when the upload request is successful</param>
     /// <param name="onError">callback when the upload request returns null or custom error</param>
-    public static void DataUpload(string _path, Dictionary<string, string> _data, AuthCallBack onSuccess, AuthCallBack onError)
+    public static void DataUpload(string _path, Dictionary<string, string> _data, DeploydCallBack onSuccess, DeploydCallBack onError)
     {
         Instance.StartCoroutine(Instance.StartDataUpload(_path, _data, onSuccess, onError));
     }
@@ -222,7 +225,7 @@ public class Deployd : MonoBehaviour {
     /// <param name="onSuccess">callback when the upload request is successful</param>
     /// <param name="onError">callback when the upload request returns null or custom error</param>
     /// <returns>Created object (JSON)</returns>
-    IEnumerator StartDataUpload( string _path, Dictionary<string, string> _data, AuthCallBack onSuccess, AuthCallBack onError)
+    IEnumerator StartDataUpload(string _path, Dictionary<string, string> _data, DeploydCallBack onSuccess, DeploydCallBack onError)
     {
         WWWForm form = new WWWForm();
         Dictionary<string, string> headers = form.headers;
@@ -399,7 +402,7 @@ public class Deployd : MonoBehaviour {
     /// <param name="_path">Path of the data you want to download (table), optional you can include id or GET query</param>
     /// <param name="onSuccess">callback when the dowload was successful</param>
     /// <param name="onError">callback when the download returns null or custom error</param>
-    public static void DataDownload(string _path, AuthCallBack onSuccess, AuthCallBack onError)
+    public static void DataDownload(string _path, DeploydCallBack onSuccess, DeploydCallBack onError)
     {
         Instance.StartCoroutine(Instance.StartDataDownload(_path, onSuccess, onError));
     }
@@ -411,7 +414,7 @@ public class Deployd : MonoBehaviour {
     /// <param name="onSuccess">callback when the dowload was successful</param>
     /// <param name="onError">callback when the download returns null or custom error</param>
     /// <returns>The requested data as JSON object</returns>
-    IEnumerator StartDataDownload(string _path, AuthCallBack onSuccess, AuthCallBack onError)
+    IEnumerator StartDataDownload(string _path, DeploydCallBack onSuccess, DeploydCallBack onError)
     {
         string url = endpoint + _path;
         url += (url.Contains("?") ? "&" : "?") + "secret=" + secretkey + "&platform=" + Application.platform.ToString();
@@ -461,7 +464,7 @@ public class Deployd : MonoBehaviour {
     /// <param name="_path">path to the object/record you want to delete</param>
     /// <param name="onSuccess">callback when the drop request was successful</param>
     /// <param name="onError">callback when the drop request returns null or custom error</param>
-    public static void DataDrop(string _path, AuthCallBack onSuccess, AuthCallBack onError)
+    public static void DataDrop(string _path, DeploydCallBack onSuccess, DeploydCallBack onError)
     {
         Instance.StartCoroutine(Instance.StartDataDrop(_path, onSuccess, onError));
     }
@@ -473,11 +476,11 @@ public class Deployd : MonoBehaviour {
     /// <param name="onSuccess">callback when the drop request was successful</param>
     /// <param name="onError">callback when the drop request returns null or custom error</param>
     /// <returns>request status/results</returns>
-    IEnumerator StartDataDrop(string _path, AuthCallBack onSuccess, AuthCallBack onError)
+    IEnumerator StartDataDrop(string _path, DeploydCallBack onSuccess, DeploydCallBack onError)
     {
 
         string url = endpoint + _path;
-        url+= (url.Contains("?") ? "&" : "?") + "secret=" + secretkey + "&platform="+Application.platform.ToString();
+        url += (url.Contains("?") ? "&" : "?") + "secret=" + secretkey + "&platform=" + Application.platform.ToString();
 
         UnityEngine.Networking.UnityWebRequest request = UnityEngine.Networking.UnityWebRequest.Delete(url);
         request.Send();
@@ -489,11 +492,11 @@ public class Deployd : MonoBehaviour {
 
         if (System.String.IsNullOrEmpty(request.error))
         {
-                onSuccess(request.responseCode.ToString());
+            onSuccess(request.responseCode.ToString());
         }
         else
         {
-                onError(request.error); // www request error
+            onError(request.error); // www request error
         }
     }
 
@@ -512,7 +515,7 @@ public class Deployd : MonoBehaviour {
     /// <param name="_data">JSON object with the upload request data</param>
     /// <param name="onSuccess">callback when the upload request is successful</param>
     /// <param name="onError">callback when the upload request returns null or custom error</param>
-    public static void PostAnalytics(string userID, string eventName, string platform, string location, string customData, AuthCallBack onSuccess, AuthCallBack onError)
+    public static void PostAnalytics(string userID, string eventName, string platform, string location, string customData, DeploydCallBack onSuccess, DeploydCallBack onError)
     {
         Instance.StartCoroutine(Instance.StartPostAnalytics(userID, eventName, platform, location, customData, onSuccess, onError));
     }
@@ -525,14 +528,14 @@ public class Deployd : MonoBehaviour {
     /// <param name="onSuccess">callback when the upload request is successful</param>
     /// <param name="onError">callback when the upload request returns null or custom error</param>
     /// <returns>Created object (JSON)</returns>
-    IEnumerator StartPostAnalytics(string userID, string eventName, string platform, string location, string customData, AuthCallBack onSuccess, AuthCallBack onError)
+    IEnumerator StartPostAnalytics(string userID, string eventName, string platform, string location, string customData, DeploydCallBack onSuccess, DeploydCallBack onError)
     {
         WWWForm form = new WWWForm();
         Dictionary<string, string> headers = form.headers;
         headers["Content-Type"] = "application/json";
         headers["Accept"] = "application/json";
         Hashtable data = new Hashtable();
-        
+
         data["eventname"] = eventName;
         data["user"] = userID;
         data["platform"] = platform;
