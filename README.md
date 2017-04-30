@@ -58,5 +58,5 @@ For any help post an issue or write to gustavo@chimera.digital or support@chimer
 # Credits
 * MiniJSON Copyright (c) 2013 Calvin Rien
 * SimpleJSON Written by Bunny83 Modified by oPless
-* deployd www.deplyd.com - Licensed under the Apache License, Version 2.0 (the "License")
+* deployd www.deployd.com - Licensed under the Apache License, Version 2.0 (the "License")
 * Deployd.cs Gustavo Otero - gustavo@chimera.digital
